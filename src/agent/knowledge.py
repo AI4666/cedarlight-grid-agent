@@ -28,7 +28,7 @@ def _atom(pred: str, args: list[str], truth: bool = True) -> str:
 class KnowledgeBase:
     def __init__(self, cfg: dict[str, Any], topology_path: Path | None = None):
         self.cfg = cfg
-        self.topology = json.loads(Path(topology_path or resolve(cfg, cfg["paths"]["topology"])).read_text())
+        self.topology = json.loads(Path(topology_path or resolve(cfg, cfg["paths"]["topology"])).read_text(encoding="utf-8"))
         self.static: dict[str, KnowledgeFact] = {}
         self.dynamic: list[KnowledgeFact] = []
         self.meta: dict[str, dict[str, Any]] = {}          # fact_id -> {source, obs_ts, confidence}
@@ -38,7 +38,7 @@ class KnowledgeBase:
         self.latest: dict[str, dict[str, float]] = {}       # entity -> latest numeric observations (for ML features)
         self.history: dict[str, list[tuple[datetime, float]]] = {}  # time series (e.g. feeder load_kw, asset condition)
         self.models: dict[str, dict[str, Any]] = {}
-        self.rules: list[dict[str, Any]] = yaml.safe_load((ROOT / "03_logic" / "rules.yaml").read_text())["horn_rules"]
+        self.rules: list[dict[str, Any]] = yaml.safe_load((ROOT / "03_logic" / "rules.yaml").read_text(encoding="utf-8"))["horn_rules"]
         self._load_static()
 
     # ---------- static knowledge ----------

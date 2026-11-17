@@ -27,7 +27,7 @@ def metrics():
     p = HERE / "artifacts" / "metrics.json"
     if not p.exists():
         pytest.skip("run run_ml.py first")
-    return json.loads(p.read_text())
+    return json.loads(p.read_text(encoding="utf-8"))
 
 
 # ---- data / reproducibility ----

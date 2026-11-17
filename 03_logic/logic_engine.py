@@ -60,7 +60,7 @@ def subst(atom: str, s: dict) -> str:
 
 # ---------- rule loading ----------
 def load_rules(path: Path | None = None) -> dict:
-    with open(path or HERE / "rules.yaml") as f:
+    with open(path or HERE / "rules.yaml", encoding="utf-8") as f:
         return yaml.safe_load(f)
 
 

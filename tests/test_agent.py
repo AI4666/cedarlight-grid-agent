@@ -316,7 +316,7 @@ def test_order_of_percepts_does_not_change_conclusions(cfg):
 # 6. LEARNING: ML improves a defined metric without violating guardrails
 # =====================================================================================================
 def test_learning_case_offline_evaluation_and_guardrails():
-    m = json.loads((ROOT / "05_ml" / "artifacts" / "metrics.json").read_text())
+    m = json.loads((ROOT / "05_ml" / "artifacts" / "metrics.json").read_text(encoding="utf-8"))
     f, c, rl = m["forecast"], m["failure"], m["rl"]
     best = f["results"][f["selected"]]["test"]["mae"]
     assert best < f["results"]["persistence_24h"]["test"]["mae"] < 1e9               # metric: forecast MAE improves on baseline
@@ -386,7 +386,7 @@ def test_kill_switch_file_flag_halts(cfg, tmp_path):
     c2["kill_switch"]["file_flag"] = str(flag)
     a = Agent(cfg=c2, risk_model=MockRiskModel())
     assert a.run(normal_batch(), NOW).status == "completed"
-    flag.write_text("stop")
+    flag.write_text("stop", encoding="utf-8")
     assert a.run(normal_batch(), NOW).status == "halted_kill_switch"
 
 
@@ -486,7 +486,7 @@ def test_audit_log_is_persisted_and_redacts_secrets(cfg, tmp_path, monkeypatch):
     path = tmp_path / "audit.jsonl"
     a = Agent(cfg=cfg, risk_model=MockRiskModel(), audit_path=path)
     a.run([P("operator", "ops", {"note": "my key is sk-live-SUPERSECRET123 token=abcd1234efgh"})], NOW)
-    text = path.read_text()
+    text = path.read_text(encoding="utf-8")
     assert text.count("\n") == len(a.audit.events) and "SUPERSECRET123" not in text and "abcd1234efgh" not in text
 
 

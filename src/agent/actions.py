@@ -154,7 +154,7 @@ class ToolRegistry:
             return None
         self.outbox.mkdir(parents=True, exist_ok=True)
         name = f"{p.tool}_{p.idempotency_key}.json"      # file name derived from tool + hash only (no user text)
-        (self.outbox / name).write_text(json.dumps(p.arguments, indent=1, default=str))
+        (self.outbox / name).write_text(json.dumps(p.arguments, indent=1, default=str), encoding="utf-8")
         return name
 
     # ---- tools (all simulated; no real grid system is touched) ----
