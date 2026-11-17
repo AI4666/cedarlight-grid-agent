@@ -88,7 +88,7 @@ def model_card(m: dict) -> str:
     rows_rl = "\n".join(f"| {k} | {v['mean_reward']:.2f} ± {v['se']:.2f} | {v['safety_violations']} |" for k, v in R.items())
 
     def zone_rows(d):
-        return "\n".join(f"| {z} | {v['failures']} | {'n/a' if v['recall'] is None else f'{v['recall']:.2f}'} | {v['flag_rate']:.2f} |"
+        return "\n".join(f"| {z} | {v['failures']} | {'n/a' if v['recall'] is None else format(v['recall'], '.2f')} | {v['flag_rate']:.2f} |"
                          for z, v in d.items() if isinstance(v, dict))
     gl, st = fair["global_top_k"], fair["zone_stratified_top_k"]
     iv = F["interval"]
