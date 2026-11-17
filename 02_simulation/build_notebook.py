@@ -326,7 +326,7 @@ res = subprocess.run([sys.executable, "-I", "-m", "pytest", *targets, "-q", "--n
 print((res.stdout.strip().splitlines() or ["(no output)"])[-1])
 mp = Path("05_ml/artifacts/metrics.json")
 if mp.exists():
-    m = json.loads(mp.read_text())
+    m = json.loads(mp.read_text(encoding="utf-8"))
     f = m["forecast"]
     print(f"forecast ({f['selected']}): test MAE {f['results'][f['selected']]['test']['mae']:.1f} kW vs persistence {f['results']['persistence_24h']['test']['mae']:.1f} kW; "
           f"90% interval test coverage {f['interval']['test_coverage']:.1%}")
@@ -421,7 +421,7 @@ def execute_and_write(out_path: Path):
     nb = {"cells": nb_cells, "nbformat": 4, "nbformat_minor": 5,
           "metadata": {"kernelspec": {"display_name": "Python 3", "language": "python", "name": "python3"},
                        "language_info": {"name": "python"}}}
-    out_path.write_text(json.dumps(nb, indent=1))
+    out_path.write_text(json.dumps(nb, indent=1), encoding="utf-8")
     return nb
 
 

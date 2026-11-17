@@ -69,8 +69,8 @@ def main(seed: int = 42, out: Path = HERE / "artifacts") -> dict:
         "rl": rl_eval,
         "artifact_sha256": {p.name: sha256(p) for p in sorted(out.glob("*.joblib")) + [out / "q_table.npy"]},
     }
-    (out / "metrics.json").write_text(json.dumps(metrics, indent=2))
-    (HERE / "model_card.md").write_text(model_card(metrics))
+    (out / "metrics.json").write_text(json.dumps(metrics, indent=2), encoding="utf-8")
+    (HERE / "model_card.md").write_text(model_card(metrics), encoding="utf-8")
     return metrics
 
 

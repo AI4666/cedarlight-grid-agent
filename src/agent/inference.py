@@ -60,7 +60,7 @@ class JoblibRiskModel:
         if not artifact.exists():
             raise ModelError("artifact missing")
         try:
-            expected = json.loads(metrics_path.read_text())["artifact_sha256"][artifact.name]
+            expected = json.loads(metrics_path.read_text(encoding="utf-8"))["artifact_sha256"][artifact.name]
         except Exception as e:
             raise ModelError("no recorded hash for artifact") from e
         if hashlib.sha256(artifact.read_bytes()).hexdigest() != expected:

@@ -18,7 +18,7 @@ SECRET_ENV_VARS = ("CEDARLIGHT_API_KEY", "CEDARLIGHT_LLM_API_KEY", "CEDARLIGHT_A
 
 
 def load_config(path: Path | str | None = None, overrides: dict[str, Any] | None = None) -> dict[str, Any]:
-    cfg = yaml.safe_load(Path(path or DEFAULT_CONFIG).read_text())
+    cfg = yaml.safe_load(Path(path or DEFAULT_CONFIG).read_text(encoding="utf-8"))
     for dotted, value in (overrides or {}).items():     # e.g. {"run.seed": 7, "kill_switch.file_flag": "..."}
         node = cfg
         *parents, leaf = dotted.split(".")
