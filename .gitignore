@@ -1,0 +1,13 @@
+.env
+*.env
+!.env.example
+__pycache__/
+.pytest_cache/
+*.pyc
+*.joblib
+*.npy
+logs/
+*.jsonl
+.venv/
+venv/
+.ipynb_checkpoints/

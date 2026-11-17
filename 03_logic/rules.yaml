@@ -1,0 +1,34 @@
+# 03_logic/rules.yaml -- Horn rules (definite clauses, FOL with variables) and CNF clauses.
+# Horn form: head <- body1, body2, ...   Heads may be negative literals (~P) to express
+# explicit exclusions; if both P and ~P become derivable the agent flags a conflict.
+
+horn_rules:
+  - {id: R1,  name: overload_from_load,   head: "Overloaded(?t)",     body: ["LoadRatioHigh(?t)"]}
+  - {id: R2,  name: heat_from_temp,       head: "HeatAdvisory(?z)",   body: ["TempHigh(?z)"]}
+  - {id: R3,  name: at_risk,              head: "AtRisk(?t)",         body: ["Overloaded(?t)", "LocatedIn(?t,?z)", "HeatAdvisory(?z)"]}
+  - {id: R4,  name: urgent_poor,          head: "InspectUrgent(?a)",  body: ["AtRisk(?a)", "ConditionPoor(?a)"]}
+  - {id: R5,  name: urgent_overdue,       head: "InspectUrgent(?a)",  body: ["AtRisk(?a)", "PastDue(?a)"]}
+  - {id: R6,  name: blocked_by_storm,     head: "Blocked(?w)",        body: ["WindowIn(?w,?z)", "Storm(?z)"]}
+  - {id: R7,  name: unsafe_if_blocked,    head: "~SafeToSchedule(?w)", body: ["Blocked(?w)"], hard_constraint: true}
+  - {id: R8,  name: safe_to_schedule,     head: "SafeToSchedule(?w)", body: ["WindowOpen(?w)", "CrewAvailable(?w)", "ClearanceOk(?w)", "WindowIn(?w,?z)", "~Storm(?z)"]}
+  - {id: R9,  name: upstream_base,        head: "Upstream(?a,?b)",    body: ["Feeds(?a,?b)"]}
+  - {id: R10, name: upstream_transitive,  head: "Upstream(?a,?c)",    body: ["Feeds(?a,?b)", "Upstream(?b,?c)"]}
+  - {id: R11, name: impact_high,          head: "ImpactHigh(?a)",     body: ["Upstream(?a,?c)", "CriticalLoad(?c)"]}
+  - {id: R12, name: allowed_on_list,      head: "AllowedAction(?t)",  body: ["ToolOnAllowList(?t)"]}
+  - {id: R13, name: forbidden_not_allowed, head: "~AllowedAction(?t)", body: ["Forbidden(?t)"], hard_constraint: true}
+
+# Ground propositional CNF clauses (for resolution / model checking demos).
+# Each clause is a disjunction of literals.
+cnf_clauses:
+  - id: C1
+    note: "Overloaded AND HeatAdvisory -> AtRisk"
+    clause: ["~Overloaded", "~HeatAdvisory", "AtRisk"]
+  - id: C2
+    note: "AtRisk AND ConditionPoor -> InspectUrgent"
+    clause: ["~AtRisk", "~ConditionPoor", "InspectUrgent"]
+  - id: C3
+    note: "Storm -> not SafeToSchedule"
+    clause: ["~Storm", "~SafeToSchedule"]
+  - id: C4
+    note: "Blocked and SafeToSchedule are mutually exclusive"
+    clause: ["~Blocked", "~SafeToSchedule"]

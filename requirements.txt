@@ -1,0 +1,7 @@
+numpy
+scipy
+scikit-learn
+joblib
+pydantic>=2
+pyyaml
+pytest

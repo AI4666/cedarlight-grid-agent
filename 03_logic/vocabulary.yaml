@@ -1,0 +1,48 @@
+# 03_logic/vocabulary.yaml -- proposition / predicate vocabulary for the CedarLight agent.
+# Atoms are written Pred(arg,...). Variables in rules start with '?'. Negation is '~Pred(...)'.
+# "source" says which stage creates the atom: percept-derived (P), rule-derived (R), static KB (K).
+
+types:
+  Zone: "service area"
+  Substation: "bulk supply point"
+  Feeder: "distribution feeder"
+  Transformer: "distribution transformer"
+  Customer: "customer or load point"
+  Window: "maintenance window"
+  Tool: "allow-listed or forbidden agent tool"
+  Asset: "supertype of Substation, Feeder, Transformer"
+
+predicates:
+  # --- percept-derived observations (P) ---
+  LoadRatioHigh:   {arity: 1, args: [Transformer], source: P, meaning: "load/capacity >= overload_load_ratio"}
+  TempHigh:        {arity: 1, args: [Zone], source: P, meaning: "temperature >= heat_advisory_temp_c"}
+  Storm:           {arity: 1, args: [Zone], source: P, meaning: "storm signal active"}
+  ConditionPoor:   {arity: 1, args: [Asset], source: P, meaning: "condition score below poor threshold"}
+  PastDue:         {arity: 1, args: [Asset], source: P, meaning: "inspection overdue"}
+  WindowOpen:      {arity: 1, args: [Window], source: P, meaning: "window not already booked"}
+  CrewAvailable:   {arity: 1, args: [Window], source: P, meaning: "qualified crew free in window"}
+  ClearanceOk:     {arity: 1, args: [Window], source: P, meaning: "min clearance to adjacent jobs met"}
+  ToolRequest:     {arity: 1, args: [Tool], source: P, meaning: "a tool call was requested (UNTRUSTED origin)"}
+  # --- static knowledge (K) ---
+  LocatedIn:       {arity: 2, args: [Asset, Zone], source: K}
+  Feeds:           {arity: 2, args: [Asset, Asset|Customer], source: K, meaning: "direct supply edge"}
+  WindowIn:        {arity: 2, args: [Window, Zone], source: K}
+  CriticalLoad:    {arity: 1, args: [Customer], source: K, meaning: "hospital, water plant, etc."}
+  Forbidden:       {arity: 1, args: [Tool], source: K, meaning: "tier-3 tool; never executable"}
+  ToolOnAllowList: {arity: 1, args: [Tool], source: K}
+  # --- rule-derived conclusions (R) ---
+  Overloaded:      {arity: 1, args: [Transformer], source: R}
+  HeatAdvisory:    {arity: 1, args: [Zone], source: R}
+  AtRisk:          {arity: 1, args: [Transformer], source: R}
+  InspectUrgent:   {arity: 1, args: [Asset], source: R}
+  Blocked:         {arity: 1, args: [Window], source: R}
+  SafeToSchedule:  {arity: 1, args: [Window], source: R, meaning: "open, crewed, clear AND an explicit ~Storm observation for its zone"}
+  Upstream:        {arity: 2, args: [Asset, Asset|Customer], source: R, meaning: "transitive closure of Feeds"}
+  ImpactHigh:      {arity: 1, args: [Asset], source: R, meaning: "outage would reach a critical load"}
+  AllowedAction:   {arity: 1, args: [Tool], source: R}
+
+entailment_statuses:
+  entailed: "q is derivable from trusted KB facts and rules"
+  contradicted: "~q is derivable, OR both q and ~q are derivable (conflict; no entailment granted)"
+  uncertain: "some but not all premises of a rule for q hold, or supporting facts are low-confidence"
+  unknown: "no relevant premises exist in the KB"

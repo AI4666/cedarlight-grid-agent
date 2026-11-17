@@ -1,0 +1,142 @@
+run:
+  seed: 42
+  max_loop_iterations: 5
+  loop_timeout_seconds: 30
+  version: 0.1.0
+simulation:
+  zones: 3
+  feeders: 12
+  assets: 60
+  horizon_hours: 24
+  resolution: 1h
+  noise_level: 0.05
+  missing_rate: 0.02
+thresholds:
+  min_percept_quality: 0.6
+  overload_load_ratio: 0.9
+  heat_advisory_temp_c: 32
+  abstain_below_confidence: 0.65
+  forecast_interval_coverage_target: 0.9
+  inspection_risk_urgent: 0.7
+  condition_poor_below: 55
+  age_old_years: 15
+  max_percept_age_hours: 6
+  fact_ttl_hours: 6
+  min_history_for_forecast: 3
+  future_skew_minutes: 5
+policy:
+  tiers:
+    read_only: 0
+    low_impact_write: 1
+    approval_required: 2
+    forbidden: 3
+  allowed_tools:
+  - query_kb
+  - write_forecast
+  - rank_inspections
+  - write_report
+  - propose_schedule
+  - request_approval
+  - escalate_to_human
+  forbidden_tools:
+  - switch_breaker
+  - shed_load
+  - dispatch_crew
+  tool_tiers:
+    query_kb: 0
+    write_forecast: 0
+    rank_inspections: 0
+    write_report: 1
+    propose_schedule: 2
+    request_approval: 1
+    escalate_to_human: 1
+  rate_limit_per_minute: 30
+  tool_timeout_seconds: 5
+scheduling:
+  max_crew_hours_per_day: 8
+  min_clearance_minutes: 30
+  blackout_conditions:
+  - storm
+  - peak_event
+  crews:
+  - id: crew1
+    skills:
+    - A
+    - B
+  - id: crew2
+    skills:
+    - A
+    - C
+  - id: crew3
+    skills:
+    - B
+    - C
+  skill_by_asset_type:
+    transformer: A
+    feeder: B
+    substation: C
+  cap_per_day: 2
+utility_weights:
+  reliability_gain: 1.0
+  outage_risk: 1.5
+  schedule_cost: 0.3
+  constraint_penalty: 100.0
+models:
+  forecaster:
+    name: gbr_load
+    version: 0.1.0
+    artifact: 05_ml/artifacts/load_model.joblib
+  failure_classifier:
+    name: logreg_failure
+    version: 0.1.0
+    artifact: 05_ml/artifacts/failure_model.joblib
+  llm:
+    provider: mock
+    model: deterministic-mock
+    timeout_seconds: 10
+    role: explain_only
+feature_flags:
+  use_llm_explanations: false
+  use_rl_policy: false
+  use_hmm_tracking: true
+  use_kalman_load: true
+  use_ml_risk_second_opinion: true
+kill_switch:
+  file_flag: data/KILL
+  api_endpoint_enabled: true
+logging:
+  level: INFO
+  audit_log: data/audit.jsonl
+perception:
+  max_batch: 500
+  max_text_len: 500
+  ranges:
+    load_ratio:
+    - 0
+    - 1.5
+    load_kw:
+    - 0
+    - 1000000
+    temp_c:
+    - -40
+    - 60
+    condition:
+    - 0
+    - 100
+    age:
+    - 0
+    - 80
+    heat_hours:
+    - 0
+    - 744
+    prior_faults:
+    - 0
+    - 50
+paths:
+  topology: data/topology.json
+  audit_log: data/audit.jsonl
+  outbox: data/outbox
+decision:
+  cost_inspect: 1.0
+  cost_failure: 12.0
+  min_evidence_vars: 1

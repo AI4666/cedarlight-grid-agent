@@ -1,0 +1,21 @@
+{
+  "depot": [0, 0],
+  "zones": ["ZoneA", "ZoneB"],
+  "substations": {"Sub1": {"zone": "ZoneA"}},
+  "feeders": {
+    "F1": {"zone": "ZoneB", "from": "Sub1"},
+    "F2": {"zone": "ZoneA", "from": "Sub1"}
+  },
+  "transformers": {
+    "T7": {"zone": "ZoneB", "feeder": "F1", "xy": [6.0, 7.0]},
+    "T9": {"zone": "ZoneB", "feeder": "F1", "xy": [8.0, 5.0]},
+    "T3": {"zone": "ZoneA", "feeder": "F2", "xy": [-4.0, 3.0]},
+    "T4": {"zone": "ZoneA", "feeder": "F2", "xy": [-6.0, -2.0]}
+  },
+  "customers": {"Hosp1": {"fed_by": "T7", "critical": true}, "Homes1": {"fed_by": "T3", "critical": false}},
+  "windows": {
+    "W1": {"zone": "ZoneB", "slot": 0}, "W2": {"zone": "ZoneB", "slot": 1},
+    "W3": {"zone": "ZoneA", "slot": 2}, "W4": {"zone": "ZoneA", "slot": 3},
+    "W5": {"zone": "ZoneA", "slot": 4}, "W6": {"zone": "ZoneA", "slot": 5}
+  }
+}
