@@ -1,0 +1,27 @@
+name: ci
+on: [push, pull_request]
+permissions: {contents: read}
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.11", cache: pip}
+      - run: pip install -r requirements.txt -r requirements-serve.txt
+      - name: Secret scan (no real credentials in source)
+        run: "! grep -rEn '(sk-[A-Za-z0-9]{20,}|ghp_[A-Za-z0-9]{30,}|AKIA[0-9A-Z]{16})' --include='*.py' --include='*.yaml' --include='*.md' ."
+      - name: Train synthetic models
+        run: cd 05_ml && python -I run_ml.py
+      - name: Tests
+        run: python -I -m pytest 02_simulation 03_logic 04_uncertainty 05_ml tests -q
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -t cedarlight-grid-agent .
+      - name: Smoke test health endpoint
+        run: |
+          docker run -d --name a -p 8000:8000 -e CEDARLIGHT_API_KEY=ci-key cedarlight-grid-agent
+          for i in $(seq 1 20); do curl -sf localhost:8000/health && exit 0; sleep 2; done; docker logs a; exit 1
